@@ -11,5 +11,5 @@
 #
 
 # Modify default IP
-sed -i 's/192.168.1.1/192.168.66.1/g' openwrt/package/base-files/files/bin/config_generate
-sed -i '/with_ech/s/^/#/' openwrt/feeds/packages/net/sing-box/Makefile
+sed -i 's/192.168.1.1/192.168.66.1/g' package/base-files/files/bin/config_generate
+sed -i '/with_ech/s/^/#/' feeds/packages/net/sing-box/Makefile
