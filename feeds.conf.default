@@ -1,3 +1,5 @@
+src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main
+src-git passwall_luci https://github.com/xiaorouji/openwrt-passwall.git;main
 src-git packages https://github.com/coolsnowwolf/packages
 src-git luci https://github.com/coolsnowwolf/luci
 #src-git luci https://github.com/coolsnowwolf/luci.git;openwrt-24.10
@@ -10,7 +12,7 @@ src-git telephony https://git.openwrt.org/feed/telephony.git
 #src-git oldpackages http://git.openwrt.org/packages.git
 #src-link custom /usr/src/openwrt/custom-feed
 src-git qmodem https://github.com/FUjr/modem_feeds.git
-src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main
+#src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main
 src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main
 src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main
 src-git helloworld https://github.com/fw876/helloworld
