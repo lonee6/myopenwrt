@@ -1,22 +1,50 @@
-
 #!/bin/sh
 
-#取wan口IP前三位
+# 目标接口（通常是 wan）
+IFACE="wan"
+# 记录上次 IP 的文件
+IPFILE="/tmp/last_wan_ip"
 
-#做50次拨号循环，50次如果都没拨上也停止
-for i in `seq 5000`;
-do 
-IP=$(ifconfig pppoe-wan 2> /dev/null | grep 'inet addr' | awk '{print $2}' | cut -d: -f2)
-#获取wan口ip
-IPP=${IP:0:7}
-echo $IP
-if [ "$IPP" != "221.205" ]; then
-#如果IP开头是100的话，重拨
-  ifdown wan | sleep 9s|ifup wan 
-else 
-  echo $IP
-  break
-#否则保留IP，跳出循环
-fi
+# 获取当前 IP
+get_ip() {
+    ubus call network.interface.$IFACE status | jsonfilter -e '@["ipv4-address"][0].address'
+}
 
+# 强制重连
+reconnect() {
+    echo "正在重连 PPPoE..."
+    ifdown $IFACE
+    sleep 3
+    ifup $IFACE
+    sleep 8  # 等待拨号完成
+}
+
+# 读取旧 IP（如果有）
+[ -f "$IPFILE" ] && OLDIP=$(cat "$IPFILE") || OLDIP=""
+
+while true; do
+    NEWIP=$(get_ip)
+
+    if [ -z "$NEWIP" ]; then
+        echo "未获取到 IP，重试..."
+        reconnect
+        continue
+    fi
+
+    # 如果还没有旧 IP（第一次运行），就强制要求再拨一次
+    if [ -z "$OLDIP" ]; then
+        echo "首次运行，已获取 IP: $NEWIP，尝试换新 IP..."
+        OLDIP="$NEWIP"
+        reconnect
+        continue
+    fi
+
+    if [ "$NEWIP" != "$OLDIP" ]; then
+        echo "获取到新 IP: $NEWIP"
+        echo "$NEWIP" > "$IPFILE"
+        exit 0
+    fi
+
+    echo "IP 相同 ($NEWIP)，重新拨号..."
+    reconnect
 done
